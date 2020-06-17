@@ -2,14 +2,15 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 
-exports.isAuth = (req, res, next) => {
+module.exports = (req, res, next) => {
   const authorization = req.get("Authorization");
 
-  if (!token) {
+  if (!authorization) {
     const error = new Error("TOKEN NOT FOUND");
     error.statusCode = 401;
     throw error;
   }
+
   const token = authorization.split(" ")[1];
 
   try {

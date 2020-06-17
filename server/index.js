@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoutes = require("./routes/user");
-const messageRoutes = require("./routes/messages");
+const chatRoutes = require("./routes/chat");
+const isAuth = require("./middleware/is-Auth");
 
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -14,12 +15,14 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/user", userRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api/chat", isAuth, chatRoutes);
 
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const message = error.message;
-  req.status(status).json({ message, ...error.payload });
+  console.log(error.payload);
+  res.status(status).json({ message, ...error.payload });
+  console.log(error);
 });
 
 mongoose

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  username: {
+  email: {
     type: String,
     required: true,
   },
@@ -10,11 +10,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  name: {
+  username: {
     type: String,
     required: true,
   },
-  lastName: {
+  fullName: {
     type: String,
     required: true,
   },
@@ -22,17 +22,26 @@ const userSchema = new Schema({
     type: Number,
     required: true,
   },
-  profilePhoto: {
+  profilePicture: {
     type: String,
   },
   status: {
     type: String,
     default: "I AM BATMAN !!!",
   },
-  friends: [
+  friendRequests: [
     {
-      friend: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      messages: [{ message: String, date: Date, isMine: Boolean }],
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    },
+  ],
+  chats: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
     },
   ],
 });
