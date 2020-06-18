@@ -20,7 +20,7 @@ app.use("/api/chat", isAuth, chatRoutes);
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const message = error.message;
-  console.log(error.payload);
+
   res.status(status).json({ message, ...error.payload });
   console.log(error);
 });

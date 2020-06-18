@@ -29,13 +29,16 @@ const userSchema = new Schema({
     type: String,
     default: "I AM BATMAN !!!",
   },
+  friends: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   friendRequests: [
     {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   ],
   chats: [

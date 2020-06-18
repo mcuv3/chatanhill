@@ -52,4 +52,14 @@ router.post(
 
 router.put("/edit-profile", isAuth, userControllers.editProfile);
 
+router.post("/friend-request", isAuth, userControllers.sendFriendRequest);
+
+router.put(
+  "/respond-friend-request",
+  isAuth,
+  userControllers.respondFriendRequest
+);
+
+router.get("/:username", isAuth, userControllers.getUser);
+
 module.exports = router;

@@ -2,6 +2,7 @@ const User = require("../model/User");
 const Chat = require("../model/Chat");
 const io = require("../socket").io;
 const { validationResult } = require("express-validator");
+const errorHandling = require("../util/errors");
 const moment = require("moment");
 
 exports.getChats = async (req, res, next) => {
@@ -13,11 +14,8 @@ exports.getChats = async (req, res, next) => {
       "username email cel profilePicture"
     );
 
-    if (!chats) {
-      const error = new Error("CHAT NOT FOUND");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!chats) return next(errorHandling("CHAT NOT FOUND", 404));
+
     res.status(200).json({
       chats,
     });
@@ -32,11 +30,8 @@ exports.getChat = async (req, res, next) => {
 
   try {
     const chat = await Chat.findById(chatId).populate("users");
-    if (!chat) {
-      const error = new Error("CHAT NOT FOUND");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!chat) return next(errorHandling("CHAT NOT FOUND", 404));
+
     res.status(200).json({
       chatId: chat._id,
       messages: chat.messages,
@@ -48,28 +43,24 @@ exports.getChat = async (req, res, next) => {
   }
 };
 
+// -h Authorization Token  body:{ chatId , message}
 exports.sendMessage = async (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error("ERROR IN VALIDATION");
-    error.statusCode = 422;
-    error.payload = { errors: errors.array() };
-    return next(error);
-  }
+
+  if (!errors.isEmpty()) return next(errorHandling("ERROR IN VALIDATION", 422));
 
   const chatId = req.body.chatId;
   const userId = req.userId;
   const message = req.body.message;
   try {
     const chat = await Chat.findById(chatId);
-    if (!chat) {
-      const error = new Error("CHAT NOT FOUND");
-      error.statusCode = 404;
-      throw error;
-    }
-    chat.messages.push({
+
+    if (!chat) return next(errorHandling("CHAT NOT FOUND", 404));
+
+    chat.messages.unshift({
       text: message,
       date: moment().format("h:mm a"),
+      globalData: Date.now(),
       author: userId,
     });
     await chat.save();

@@ -4,33 +4,30 @@ const Chat = require("../model/Chat");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
+const errorHandling = require("../util/errors");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 exports.login = async (req, res, next) => {
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    const error = new Error("ERROR IN VALIDATION");
-    error.statusCode = 422;
-    error.payload = { errors: errors.array() };
-    return next(error);
-  }
+  if (!errors.isEmpty())
+    return next(
+      errorHandling("ERROR IN VALIDATION", 422, { errors: errors.array() })
+    );
 
   const email = req.body.email;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ email }).populate("chats");
-    if (!user) {
-      const error = new Error("USER NOT FOUND");
-      error.statusCode = 404;
-      throw error;
-    }
+    const user = await User.findOne({ email }).populate(
+      "friends",
+      "username profilePicture"
+    );
+
+    if (!user) return next(errorHandling("USER NOT FOUND", 404));
+
     const isEqual = await bcrypt.compare(password, user.password);
-    if (!isEqual) {
-      const error = new Error("INCORRECT PASSWORD");
-      error.statusCode = 401;
-      throw error;
-    }
+
+    if (!isEqual) return next(errorHandling("INCORRECT PASSWORD", 401));
 
     const token = jwt.sign(
       { userId: user._id, email: user.email },
@@ -39,13 +36,13 @@ exports.login = async (req, res, next) => {
         expiresIn: "1h",
       }
     );
-    console.log(user);
+
     res.status(200).json({
       token,
       username: user.username,
       userId: user._id,
       expiresIn: 3600,
-      chats: user.chats._doc,
+      chats: user.friends,
     });
   } catch (e) {
     if (!e.statusCode) e.statusCode = 500;
@@ -55,12 +52,10 @@ exports.login = async (req, res, next) => {
 exports.signup = async (req, res, next) => {
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    const error = new Error("ERROR IN VALIDATION");
-    error.statusCode = 422;
-    error.payload = { errors: errors.array() };
-    return next(error);
-  }
+  if (!errors.isEmpty())
+    return next(
+      errorHandling("ERROR IN VALIDATION", 422, { errors: errors.array() })
+    );
 
   const email = req.body.email;
   const password = req.body.password;
@@ -89,50 +84,80 @@ exports.signup = async (req, res, next) => {
 
 exports.sendFriendRequest = async (req, res, next) => {
   const userId = req.userId;
-  const possibleFriend = req.body.username;
+  const possibleFriend = req.body.friend;
   try {
-    const user = await User.findOne({ username: possibleFriend });
-    if (!user) {
-      const error = new Error("USER NOT FOUND");
-      error.statusCode = 404;
-      return next(error);
-    }
-    user.friendRequest.push({ user: userId });
-    await user.save();
-    req.status(200).json({
-      message: "REQUEST SUCCESSFULLY SENT",
-    });
+    const friend = await User.findOne({ username: possibleFriend });
+
+    if (!friend || friend._id.toString() === userId.toString())
+      return next(errorHandling("INCORRECT USER", 404));
+
+    const userFriend = await User.findById(userId).select("friends");
+
+    const isAlreadyMyFriend = userFriend.friends.find(
+      (f) => f.toString() === friend._id.toString()
+    );
+
+    if (isAlreadyMyFriend)
+      return next(errorHandling("ITS YOUR FRIEND ALREADY", 404));
+
+    friend.friendRequests.push(userId);
+    await friend.save();
+    //emit to the friend the request
+    res.status(200).json({ message: "REQUEST SUCCESSFULLY SENT" });
   } catch (e) {
     if (!e.statusCode) e.statusCode = 500;
     next(e);
   }
 };
 
+// -h Token Bearer  { friendId,option:Bool (Accept or reject) }
 exports.respondFriendRequest = async (req, res, next) => {
   const userId = req.userId;
-  const newFriend = req.body.username;
+  const newFriendId = req.body.friendId;
   const option = req.body.option;
   try {
     const user = await User.findById(userId);
-    const userFriendId = await User.findOne({ username: newFriend }).select(
-      "_id"
+    user.friendRequests = user.friendRequests.filter(
+      (u) => u.toString() !== newFriendId
     );
-    user.friendRequests.filter((u) => u !== userFriendId);
+    let message = "FRIEND REQUEST REJECTED";
 
     if (option) {
-      const users = [userId, userFriendId];
+      const userFriend = await User.findById(newFriendId);
+      const users = [userId, userFriend._id];
       const chat = new Chat({
-        users: [userId, newFriend],
+        users,
         messages: [],
       });
       const chatCreated = await chat.save();
       user.chats.push(chatCreated._id);
-      userFriendId.chats.push(chatCreated._id);
-      await userFriendId.save();
+      user.friends.push(userFriend._id);
+      userFriend.chats.push(chatCreated._id);
+      userFriend.friends.push(userId);
+      await userFriend.save();
+      message = "YOU ARE FRIEND RIGHT NOW";
     }
     await user.save();
 
+    res.status(200).json({ message });
+
     //emit both users pushing a new chat between them in theirs sessions
+  } catch (e) {
+    if (!e.statusCode) e.statusCode = 500;
+    next(e);
+  }
+};
+
+exports.getUser = async (req, res, next) => {
+  const username = req.params.username;
+  try {
+    const usernameRegex = new RegExp(username);
+
+    const user = await User.find({
+      username: { $regex: usernameRegex, $options: "i" },
+    });
+    if (!user) return next(errorHandling("USER NOT FOUND", 404));
+    res.status(200).json({ user });
   } catch (e) {
     if (!e.statusCode) e.statusCode = 500;
     next(e);
