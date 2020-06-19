@@ -33,10 +33,12 @@ router.post(
         });
       }),
     check("password", "Enter a valid password").trim().isLength({ min: 6 }),
+    check("passwordConfirm").custom((value, { req }) => {
+      if (value !== req.body.password) throw new Error("Passwords must match");
+      return true;
+    }),
     check("cel", "Enter a valid phone number").trim().isMobilePhone(),
-    check("fullName", "Thats not your name unless your a Elon Musk'son")
-      .trim()
-      .isLength({ min: 20 }),
+    check("fullName", "Please enter your name").trim().not().isEmpty(),
     check("username")
       .trim()
       .custom((value, { req }) => {
