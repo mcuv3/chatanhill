@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoutes = require("./routes/user");
 const chatRoutes = require("./routes/chat");
+const path = require("path");
 const isAuth = require("./middleware/is-Auth");
 
 const MONGO_URI = process.env.MONGO_URI;
@@ -13,6 +14,8 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, "images")));
 
 app.use("/api/user", userRoutes);
 app.use("/api/chat", isAuth, chatRoutes);

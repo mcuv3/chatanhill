@@ -1,31 +1,68 @@
-import React from "react";
+import React, { useEffect } from "react";
+import {
+  theme,
+  ThemeProvider,
+  CSSReset,
+  Grid,
+  Box,
+  useToast,
+} from "@chakra-ui/core";
+import Chat from "../../components/Chat/Chat";
+import ChatView from "../../components/ChatView/index/ChatView";
 
-import chatBg from "../../Assets/chat-bg.jpg";
-import { theme, ThemeProvider, CSSReset, Grid, Box } from "@chakra-ui/core";
+const breakpoints = ["360px", "768px", "1024px", "1440px"];
+breakpoints.sm = breakpoints[0];
+breakpoints.md = breakpoints[1];
+breakpoints.lg = breakpoints[2];
+breakpoints.xl = breakpoints[3];
 
-const index = () => {
+const newTheme = {
+  ...theme,
+  breakpoints,
+};
+
+const Index = (props) => {
+  const toast = useToast();
+  useEffect(() => {
+    setTimeout(() => {
+      // return toast({
+      //   position: "bottom-left",
+      //   title: "Successfully signed in.",
+      //   description: "Start chatting and chilling.",
+      //   status: "success",
+      //   duration: 9000,
+      //   isClosable: true,
+      // });
+    }, 1000);
+  }, []);
+
   return (
-    <Grid
-      templateColumns="30% 70%"
-      gap={0}
-      width="82rem"
-      height="96vh"
-      m="auto"
-      pt="1rem"
-    >
-      <Box w="100%" h="100%" bg="blue" />
-      <Box
-        w="100%"
-        h="100%"
-        bg={chatBg}
-        style={{
-          backgroundImage: `url(${chatBg})`,
-          backgroundAttachment: "fixed",
-          backgroundSize: "auto",
-        }}
-      />
-    </Grid>
+    <ThemeProvider theme={newTheme}>
+      <CSSReset />
+      <Grid
+        templateColumns="30% 70%"
+        gap={0}
+        width={{ lg: "88vw", xl: "82rem" }}
+        height="95vh"
+        m="auto"
+        pt="1rem"
+      >
+        <Box w="100%" h="95vh">
+          <Chat />
+        </Box>
+        <Box
+          w="100%"
+          h="95vh"
+          //bg="linear-gradient(to bottom,#319795,#E6FFFA)"
+          style={{
+            backgroundImage: "linear-gradient(to bottom,#4FD1C5 40%,#E6FFFA)",
+          }}
+        >
+          <ChatView />
+        </Box>
+      </Grid>
+    </ThemeProvider>
   );
 };
 
-export default index;
+export default Index;

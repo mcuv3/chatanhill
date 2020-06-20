@@ -24,6 +24,7 @@ const userSchema = new Schema({
   },
   profilePicture: {
     type: String,
+    default: "http://localhost:8080/profilePictures/default.jpeg",
   },
   status: {
     type: String,
