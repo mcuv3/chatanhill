@@ -1,12 +1,5 @@
-import React, { useEffect } from "react";
-import {
-  theme,
-  ThemeProvider,
-  CSSReset,
-  Grid,
-  Box,
-  useToast,
-} from "@chakra-ui/core";
+import React from "react";
+import { theme, ThemeProvider, CSSReset, Grid, Box } from "@chakra-ui/core";
 import Chat from "../../components/Chat/Chat";
 import ChatView from "../../components/ChatView/index/ChatView";
 
@@ -22,20 +15,6 @@ const newTheme = {
 };
 
 const Index = (props) => {
-  const toast = useToast();
-  useEffect(() => {
-    setTimeout(() => {
-      // return toast({
-      //   position: "bottom-left",
-      //   title: "Successfully signed in.",
-      //   description: "Start chatting and chilling.",
-      //   status: "success",
-      //   duration: 9000,
-      //   isClosable: true,
-      // });
-    }, 1000);
-  }, []);
-
   return (
     <ThemeProvider theme={newTheme}>
       <CSSReset />
@@ -53,7 +32,6 @@ const Index = (props) => {
         <Box
           w="100%"
           h="95vh"
-          //bg="linear-gradient(to bottom,#319795,#E6FFFA)"
           style={{
             backgroundImage: "linear-gradient(to bottom,#4FD1C5 40%,#E6FFFA)",
           }}

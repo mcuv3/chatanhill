@@ -1,8 +1,13 @@
 import React from "react";
 import { Text, Stack, Avatar, Heading, Flex } from "@chakra-ui/core";
 import classes from "./ChatItem.css";
+import { useStore } from "../../../../store/index";
 
 const ChatItem = (props) => {
+  const dispatch = useStore()[1];
+  const changeChatView = () => {
+    dispatch("TOGGLE_CHAT_VIEW", { chatId: props.id });
+  };
   return (
     <Stack
       isInline
@@ -11,19 +16,25 @@ const ChatItem = (props) => {
       border="1px"
       borderColor="#E6FFFA"
       className={classes.avatar}
+      onClick={changeChatView}
     >
       <Avatar>
-        <Avatar name="Prosper Otemuyiwa" src="https://bit.ly/prosper-baba" />
+        <Avatar name="Prosper Otemuyiwa" src={props.user.profilePicture} />
       </Avatar>
 
-      <Flex direction="column" width="100%">
-        <Heading as="h6" size="xs">
-          Mcuve
+      <Flex direction="column">
+        <Heading as="h6" size="xs" color="#2C7A7B">
+          {props.user.username}
         </Heading>
-        <Text fontSize="sm">Hi how are you?</Text>
+        <Text fontSize="sm" color="#319795">
+          {props.lastMessage ? props.lastMessage.text.slice(0, 25) : null}
+        </Text>
       </Flex>
-
-      {/* You can also change the borderColor and bg of the badge */}
+      <Flex alignSelf="flex-end" ml="auto">
+        <Text fontSize="xs" color="gray.400">
+          {props.lastMessage ? props.lastMessage.date : null}
+        </Text>
+      </Flex>
     </Stack>
   );
 };

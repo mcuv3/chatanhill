@@ -32,9 +32,7 @@ const Form = (props) => {
   const onSubmit = (e) => {
     e.preventDefault();
     const submitForm = {};
-    for (let key in form) {
-      submitForm[key] = form[key].value;
-    }
+    for (let key in form) submitForm[key] = form[key].value;
     setLoading(true);
     axios
       .post(props.endpoint, submitForm)

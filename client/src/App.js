@@ -4,13 +4,14 @@ import { authContext } from "./auth-context/auth-context";
 import LayOut from "./HOC/LayOut/LayOut";
 import Home from "./pages/home/home";
 import Index from "./pages/Index/index";
+import { useStore } from "./store/index";
 
 const App = () => {
-  const { token, user, checkCredentials } = useContext(authContext);
+  const [state, dispatch] = useStore();
 
   useEffect(() => {
-    if (!token) checkCredentials();
-  }, []);
+    if (!state.auth.token) dispatch("CHECK_CREDENTIALS", dispatch);
+  }, [state.auth.token]);
 
   let Routes = (
     <LayOut>
@@ -21,12 +22,12 @@ const App = () => {
       </Suspense>
     </LayOut>
   );
-  if (token) {
+  if (state.auth.token) {
     Routes = (
       <Suspense fallback={<div>loading ... </div>}>
         <Switch>
-          <Route path={"/" + user.username} component={Index} />
-          <Redirect to={"/" + user.username} />
+          <Route path={"/" + state.auth.user.username} component={Index} />
+          <Redirect to={"/" + state.auth.user.username} />
         </Switch>
       </Suspense>
     );

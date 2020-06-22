@@ -1,40 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Stack, Box, Button } from "@chakra-ui/core";
 import classes from "../util/message.css";
-const currentUser = 1;
 
 const Messages = (props) => {
   const messagesEnd = useRef();
-  const [messages, setMessages] = useState([
-    { user: 1, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 1, message: "Hi how are you?" },
-    { user: 1, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 1, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 1, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 1, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 1, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    { user: 2, message: "Hi how are you?" },
-    {
-      user: 1,
-      message:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis enim debitis at cum consequuntur animi doloremque ad magnam earum perferendis nesciunt iusto vitae ducimus sequi iste natus consectetur ut veniam, reprehenderit corrupti molestiae. Non impedit a exercitationem totam assumenda! Incidunt.",
-    },
-    {
-      user: 2,
-      message:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis enim debitis at cum consequuntur animi doloremque ad magnam earum perferendis nesciunt iusto vitae ducimus sequi iste natus consectetur ut veniam, reprehenderit corrupti molestiae. Non impedit a exercitationem totam assumenda! Incidunt.",
-    },
-  ]);
+  const [messages, setMessages] = useState(props.messages);
 
   useEffect(() => {
     messagesEnd.current.scrollIntoView();
@@ -52,11 +22,12 @@ const Messages = (props) => {
       return [...prevMessages, message];
     });
   };
+  console.log(props.messages);
 
   return (
     <Stack p="1rem 10%" overflowY="scroll">
       {messages.map((message, index) => {
-        if (message.user !== currentUser)
+        if (message.author !== props.currentUser)
           return (
             <Box
               mr="auto"
@@ -68,7 +39,7 @@ const Messages = (props) => {
               ref={index === messages.length - 1 ? messagesEnd : null}
               key={index}
             >
-              {message.message}
+              {message.text}
             </Box>
           );
         else
@@ -83,7 +54,7 @@ const Messages = (props) => {
               ref={index === messages.length - 1 ? messagesEnd : null}
               key={index}
             >
-              {message.message}
+              {message.text}
             </Box>
           );
       })}

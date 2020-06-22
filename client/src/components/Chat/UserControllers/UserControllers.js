@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Stack, Avatar, Icon, Flex, Tooltip } from "@chakra-ui/core";
 import classes from "../../util/hover.css";
-import { authContext } from "../../../auth-context/auth-context";
+import { useStore } from "../../../store/index";
 const UserControllers = () => {
-  const logout = useContext(authContext).logOut;
+  const dispatch = useStore()[1];
   return (
     <Stack isInline p="0.6rem" bg="#319795">
       <Avatar name="Mcuve" src="https://bit.ly/dan-abramov" />
@@ -19,7 +19,7 @@ const UserControllers = () => {
             name="lock"
             size="1.2rem"
             className={classes.hover}
-            onClick={() => logout()}
+            onClick={() => dispatch("LOG_OUT")}
           />
         </Tooltip>
       </Flex>

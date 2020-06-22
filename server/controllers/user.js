@@ -18,10 +18,7 @@ exports.login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   try {
-    const user = await User.findOne({ email }).populate(
-      "friends",
-      "username profilePicture"
-    );
+    const user = await User.findOne({ email });
 
     if (!user) return next(errorHandling("USER NOT FOUND", 404));
 
@@ -42,12 +39,17 @@ exports.login = async (req, res, next) => {
       }
     );
 
+    const chats = await Chat.find({ _id: { $in: user.chats } }).populate(
+      "users",
+      "profilePicture username"
+    );
+
     res.status(200).json({
       token,
       username: user.username,
       userId: user._id,
       expiresIn: 3600,
-      chats: user.friends,
+      chats: chats,
     });
   } catch (e) {
     if (!e.statusCode) e.statusCode = 500;

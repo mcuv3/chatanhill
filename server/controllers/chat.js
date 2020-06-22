@@ -6,12 +6,13 @@ const errorHandling = require("../util/errors");
 const moment = require("moment");
 
 exports.getChats = async (req, res, next) => {
-  const chatsId = req.body.chatsId;
+  const userId = req.userId;
 
   try {
-    const chats = await Chat.find({ _id: { $in: chatsId } }).populate(
+    const user = await User.findOne({ _id: userId });
+    const chats = await Chat.find({ _id: { $in: user.chats } }).populate(
       "users",
-      "username email cel profilePicture"
+      "profilePicture username"
     );
 
     if (!chats) return next(errorHandling("CHAT NOT FOUND", 404));

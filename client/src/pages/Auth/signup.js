@@ -57,7 +57,6 @@ const SignUp = (props) => {
   const success = (result) => {
     onClose();
     props.signedUp();
-    console.log(result);
   };
   return (
     <Button {...props.buttonStyle} ml="0.5rem" onClick={onOpen}>

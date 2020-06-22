@@ -1,8 +1,8 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import Form from "../../components/form/form";
 import { useDisclosure, Button } from "@chakra-ui/core";
-import { authContext } from "../../auth-context/auth-context";
 import { withRouter } from "react-router-dom";
+import { useStore } from "../../store/index";
 
 const formFields = {
   email: {
@@ -25,12 +25,14 @@ const formFields = {
 
 const SignUp = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const logIn = useContext(authContext).logIn;
+  const [state, dispatch] = useStore();
+
+  useEffect(() => {
+    if (state.auth.token) props.history.replace("/" + state.auth.user.username);
+  }, [state.auth.token]);
   const success = (result) => {
     onClose();
-    logIn(result.data);
-    props.history.replace("/" + result.data.username);
-    console.log(result);
+    dispatch("LOG_IN", result.data);
   };
   useEffect(() => {
     if (props.justCreateAccount && !isOpen) onOpen();
