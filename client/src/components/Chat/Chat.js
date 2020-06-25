@@ -6,8 +6,7 @@ import { Grid } from "@chakra-ui/core";
 import { useStore } from "../../store/index";
 
 const Chat = (props) => {
-  const [state, dispatch] = useStore();
-
+  const state = useStore()[0];
   return (
     <Grid
       spacing={0}
@@ -17,7 +16,7 @@ const Chat = (props) => {
     >
       <UserControllers />
       <Search />
-      <Chats chats={state.chat.chats} userId={state.userId} />
+      <Chats chats={state.chat.chats} userId={state.auth.userId} />
     </Grid>
   );
 };

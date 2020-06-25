@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const errorHandling = require("../util/errors");
+const socket = require("../socket").socket;
 const SECRET_KEY = process.env.SECRET_KEY;
 
 exports.login = async (req, res, next) => {
@@ -43,6 +44,10 @@ exports.login = async (req, res, next) => {
       "users",
       "profilePicture username"
     );
+    chats.forEach(async (chat) => {
+      console.log(chat._id.toString());
+      await socket().join(chat._id.toString());
+    });
 
     res.status(200).json({
       token,

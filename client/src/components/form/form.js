@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import axios from "../../axios-instance";
+import axios from "axios";
 import {
   Button,
   Drawer,
@@ -8,7 +8,6 @@ import {
   DrawerHeader,
   DrawerContent,
   DrawerBody,
-  Box,
   Stack,
   FormLabel,
   Input,

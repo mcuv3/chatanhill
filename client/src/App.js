@@ -1,6 +1,6 @@
-import React, { Suspense, useContext, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import { authContext } from "./auth-context/auth-context";
+
 import LayOut from "./HOC/LayOut/LayOut";
 import Home from "./pages/home/home";
 import Index from "./pages/Index/index";
@@ -18,6 +18,7 @@ const App = () => {
       <Suspense fallback={<div>loading ... </div>}>
         <Switch>
           <Route path="/" component={Home} />
+          <Redirect to="/" />
         </Switch>
       </Suspense>
     </LayOut>

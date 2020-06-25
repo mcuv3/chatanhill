@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Grid } from "@chakra-ui/core";
 import Controllers from "../ChatViewControllers";
 import Messages from "../Messages";
 import ChatInput from "../InputChat";
 import { useStore } from "../../../store/index";
 import Default from "../Default";
+import io from "socket.io-client";
 const ChatView = (props) => {
-  const [message, setMessage] = useState(null);
   const [state, dispatch] = useStore();
+  const sendMessage = (msg) => {
+    dispatch("SEND_MESSAGE", { msg, dispatch });
+  };
 
   let view = (
     <Grid templateColumns="1fr" height="100%">
@@ -19,14 +22,10 @@ const ChatView = (props) => {
       <Grid templateColumns="1fr" templateRows="4rem auto 2.6rem" height="100%">
         <Controllers user={state.chat.chatView.user} />
         <Messages
-          setNewMessage={message}
-          resetMessage={() => setMessage(null)}
           messages={state.chat.chatView.messages}
           currentUser={state.auth.userId}
         />
-        <ChatInput
-          setNewMessage={(msg) => setMessage({ user: 1, message: msg })}
-        />
+        <ChatInput setNewMessage={sendMessage} />
       </Grid>
     );
   }

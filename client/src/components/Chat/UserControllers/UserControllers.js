@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Stack, Avatar, Icon, Flex, Tooltip } from "@chakra-ui/core";
 import classes from "../../util/hover.css";
 import { useStore } from "../../../store/index";

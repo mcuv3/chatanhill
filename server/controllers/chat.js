@@ -1,6 +1,7 @@
 const User = require("../model/User");
 const Chat = require("../model/Chat");
-const io = require("../socket").io;
+const socket = require("../socket").socket;
+//const io = require("../socket").io;
 const { validationResult } = require("express-validator");
 const errorHandling = require("../util/errors");
 const moment = require("moment");
@@ -16,6 +17,11 @@ exports.getChats = async (req, res, next) => {
     );
 
     if (!chats) return next(errorHandling("CHAT NOT FOUND", 404));
+
+    chats.forEach(async (chat) => {
+      console.log(chat._id.toString());
+      await socket().join(chat._id.toString());
+    });
 
     res.status(200).json({
       chats,
@@ -58,23 +64,28 @@ exports.sendMessage = async (req, res, next) => {
 
     if (!chat) return next(errorHandling("CHAT NOT FOUND", 404));
 
-    chat.messages.unshift({
+    const chatMessage = {
       text: message,
       date: moment().format("h:mm a"),
-      globalData: Date.now(),
+      globalDate: Date.now(),
       author: userId,
+      status: "SENT",
+    };
+
+    chat.messages.push(chatMessage);
+
+    //await chat.save();
+
+    socket().to(chatId).emit("MESSAGES", {
+      action: "MESSAGE_RECEIVED",
+      message: chatMessage,
+      userId,
+      chatId,
     });
-    await chat.save();
 
     res.status(200).json({
-      chat,
+      date: moment().format("h:mm a"),
     });
-    // emit to the users in this chat
-    // io().to(chatId.toString()).emit("add message", {
-    //   type: "MESSAGE_RECEIVED",
-    //   message,
-    //   userId,
-    // });
   } catch (e) {
     if (!e.statusCode) e.statusCode = 500;
     next(e);

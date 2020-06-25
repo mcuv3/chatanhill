@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 import { theme, ThemeProvider, CSSReset } from "@chakra-ui/core";
+import { useStore } from "../../store/index";
+import { withRouter } from "react-router-dom";
 
 const breakpoints = ["360px", "768px", "1024px", "1440px"];
 breakpoints.sm = breakpoints[0];
@@ -13,6 +15,11 @@ const newTheme = {
   breakpoints,
 };
 const LayOut = (props) => {
+  const state = useStore()[0];
+  useEffect(() => {
+    if (state.auth.token) props.history.replace("/" + state.auth.user.username);
+  }, [state.auth.token]);
+
   return (
     <ThemeProvider theme={newTheme}>
       <CSSReset />
@@ -22,4 +29,4 @@ const LayOut = (props) => {
   );
 };
 
-export default LayOut;
+export default withRouter(LayOut);

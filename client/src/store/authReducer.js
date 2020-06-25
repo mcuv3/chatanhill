@@ -15,6 +15,7 @@ const initialState = {
 const configureAuth = () => {
   const actions = {
     LOG_IN: (cb, globalState, payload) => {
+      console.log(payload);
       localStorage.setItem("token", payload.token);
       localStorage.setItem("userId", payload.userId);
       localStorage.setItem("username", payload.username);
@@ -39,12 +40,13 @@ const configureAuth = () => {
     LOG_OUT: (cb) => {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
+      localStorage.removeItem("username");
       cb({
         auth: initialState,
       });
     },
     CHECK_CREDENTIALS: (cb, globalState, payload) => {
-      if (localStorage.getItem("token")) payload("LOAD_CHATS");
+      if (localStorage.getItem("token")) payload("LOAD_CHATS", payload);
       cb({
         auth: {
           ...globalState.auth,

@@ -10,9 +10,9 @@ const ChatViewControllers = (props) => {
       borderBottom="1px"
       borderColor="#2C7A7B"
     >
-      <Avatar name="Ryan Florence" src="https://bit.ly/ryan-florence" />
+      <Avatar name="Ryan Florence" src={props.user.profilePicture} />
       <Heading as="h6" size="xs" mt="0.7rem">
-        mcuve
+        {props.user.username}
       </Heading>
       <Flex ml="auto" justify="space-around" align="center" width="12%">
         <Icon name="search-2" size="1rem" className={classes.hover} />

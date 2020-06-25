@@ -32,9 +32,6 @@ mongoose
   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     const server = app.listen(8080);
-    const io = require("./socket").init(server);
-    io.on("connect", (socket) => {
-      console.log("CONNECTED TO DE SOCKET");
-    });
+    require("./socket").init(server);
   })
   .catch((e) => console.log(e));

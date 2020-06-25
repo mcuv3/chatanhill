@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { theme, ThemeProvider, CSSReset, Grid, Box } from "@chakra-ui/core";
 import Chat from "../../components/Chat/Chat";
 import ChatView from "../../components/ChatView/index/ChatView";
+import io from "socket.io-client";
+import { useStore } from "../../store/index";
 
 const breakpoints = ["360px", "768px", "1024px", "1440px"];
 breakpoints.sm = breakpoints[0];
@@ -15,6 +17,24 @@ const newTheme = {
 };
 
 const Index = (props) => {
+  const [state, dispatch] = useStore();
+  useEffect(() => {
+    const socket = io("http://localhost:8080");
+    // state.chat.chats.forEach((chat) => {
+    //   socket.emit("JOIN", chat._id);
+    // });
+    socket.on("MESSAGES", (data) => {
+      if (data.action === "MESSAGE_RECEIVED") {
+        console.log(data.userId);
+        if (data.userId !== state.auth.userId)
+          dispatch("MESSAGE_RECEIVED", data);
+      }
+      if (data.action === "HOLA") {
+        console.log("LLEGANDO");
+      }
+    });
+  }, []);
+
   return (
     <ThemeProvider theme={newTheme}>
       <CSSReset />

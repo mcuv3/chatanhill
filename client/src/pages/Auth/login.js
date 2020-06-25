@@ -25,15 +25,12 @@ const formFields = {
 
 const SignUp = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [state, dispatch] = useStore();
+  const dispatch = useStore()[1];
 
-  useEffect(() => {
-    if (state.auth.token) props.history.replace("/" + state.auth.user.username);
-  }, [state.auth.token]);
   const success = (result) => {
-    onClose();
     dispatch("LOG_IN", result.data);
   };
+
   useEffect(() => {
     if (props.justCreateAccount && !isOpen) onOpen();
     if (isOpen) props.toggleJustCreateAccount();

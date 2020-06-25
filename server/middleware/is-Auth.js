@@ -4,17 +4,17 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 module.exports = (req, res, next) => {
   const authorization = req.get("Authorization");
-
+  console.log(authorization);
   if (!authorization) {
     const error = new Error("TOKEN NOT FOUND");
     error.statusCode = 401;
     throw error;
   }
 
-  const token = authorization.split(" ")[1];
+  //const token = authorization.split(" ")[1];
 
   try {
-    decoded = jwt.verify(token, SECRET_KEY);
+    decoded = jwt.verify(authorization, SECRET_KEY);
   } catch (e) {
     e.statusCode = 500;
     throw e;
